@@ -2,6 +2,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using System;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Engine.Core
 {
@@ -10,6 +11,8 @@ namespace Engine.Core
         public Action LoadAction;
         public Action UpdateFrameAction;
         public Action RenderFrameAction;
+
+        public float Time {get; private set;}
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -41,7 +44,16 @@ namespace Engine.Core
 
             RenderFrameAction?.Invoke();
 
+            Time = (float)e.Time;
+
             SwapBuffers();
+        }
+
+        protected override void OnResize(ResizeEventArgs e)
+        {
+            base.OnResize(e);
+
+            GL.Viewport(0, 0, Size.X, Size.Y);
         }
     }
 }

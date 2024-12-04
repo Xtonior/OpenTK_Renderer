@@ -1,6 +1,7 @@
 using System;
 using Engine.Core;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 
 namespace Engine.Game
@@ -56,6 +57,8 @@ namespace Engine.Game
             GL.BindVertexArray(0);
         }
 
+        float t = 0.0f;
+
         public override void OnRender()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -63,7 +66,12 @@ namespace Engine.Game
             mainShader.Use();
 
             int u_resolution = GL.GetUniformLocation(mainShader.Handle, "u_resolution");
-            GL.Uniform2(u_resolution, 800f, 600f);
+            GL.Uniform2(u_resolution, (float)window.ClientSize.X, (float)window.ClientSize.Y);
+
+            t += window.Time;
+
+            int u_time = GL.GetUniformLocation(mainShader.Handle, "u_time");
+            GL.Uniform1(u_time, t);
 
             GL.BindVertexArray(vao);
             // GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 6); // Six vertices for two triangles
