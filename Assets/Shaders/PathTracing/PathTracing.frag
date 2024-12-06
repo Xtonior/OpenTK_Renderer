@@ -15,7 +15,7 @@ in vec2 texCoord;
 
 const float MAX_DIST = 99999.0;
 
-vec3 sun = vec3(0.8, 0.8, 0.96);
+vec3 sun = vec3(1.0, 1.0, 1.0);
 vec3 sky = vec3(0.2, 0.3, 0.9);
 
 uvec4 R_STATE;
@@ -110,16 +110,38 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 	vec3 n;
 
     // Sphere Intersection
-    vec4 sphere = vec4(1.0, -2.0, 1.0, 1.0);
+    vec4 sphereGlass = vec4(1.0, -2.0, 1.0, 1.0);
+	vec4 sphereMirror = vec4(-2.0, 1.0, 1.0, 1.0);
+	vec4 sphereLight = vec4(3.0, -4.0, 1.0, 0.5);
 
-    it = sphIntersect(ro - sphere.xyz, rd, sphere.w);
+    it = sphIntersect(ro - sphereGlass.xyz, rd, sphereGlass.w);
 
 	if(it.x > 0.0 && it.x < minIt.x) 
     {
 		minIt = it;
 		vec3 itPos = ro + rd * it.x;
-		n = normalize(itPos - sphere.xyz);
-		col = vec4(0.7, 0.6, 0.9, -1.5);
+		n = normalize(itPos - sphereGlass.xyz);
+		col = vec4(0.9, 0.9, 0.9, -1.5);
+	}
+
+	it = sphIntersect(ro - sphereMirror.xyz, rd, sphereMirror.w);
+
+	if(it.x > 0.0 && it.x < minIt.x) 
+    {
+		minIt = it;
+		vec3 itPos = ro + rd * it.x;
+		n = normalize(itPos - sphereMirror.xyz);
+		col = vec4(1.0, 1.0, 1.0, 1.0);
+	}
+
+	it = sphIntersect(ro - sphereLight.xyz, rd, sphereLight.w);
+
+	if(it.x > 0.0 && it.x < minIt.x) 
+    {
+		minIt = it;
+		vec3 itPos = ro + rd * it.x;
+		n = normalize(itPos - sphereLight.xyz);
+		col = vec4(10.0, 10.0, 10.0, -2.0);
 	}
 
     // Box Intersection
@@ -145,7 +167,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		col = vec4(0.8, 0.6, 0.7, 0.3);
 	}
 
-    // RayTrace
+    // Ray trace
 	if(minIt.x == MAX_DIST) return vec4(getSky(rd, lightDir), -2.0);
 	if(col.a == -2.0) return col;
 

@@ -46,7 +46,7 @@ namespace Engine.Game
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(int), indices, BufferUsageHint.StaticDraw);
 
-            mainShader = new Shader("Assets/Shaders/shader.vert", "Assets/Shaders/shader.frag");
+            mainShader = new Shader("Assets/Shaders/PathTracing/PathTracing.vert", "Assets/Shaders/PathTracing/PathTracing.frag");
             mainShader.Use();
 
             // Position attribute (2 floats)
@@ -73,13 +73,16 @@ namespace Engine.Game
 
             mainShader.Use();
 
+            Vector2 aspect = Vector2.Normalize(window.Size);
+            float numRays = 1024.0f;
+
             int u_resolution = GL.GetUniformLocation(mainShader.Handle, "u_resolution");
-            GL.Uniform2(u_resolution, (float)window.ClientSize.X, (float)window.ClientSize.Y);
+            GL.Uniform2(u_resolution, numRays * aspect.X, numRays * aspect.Y);
 
             t += window.Time;
 
             int u_time = GL.GetUniformLocation(mainShader.Handle, "u_time");
-            GL.Uniform1(u_time, 30.0f);
+            GL.Uniform1(u_time, 120.0f);
 
             Random r = new Random();
             int seed = r.Next();
@@ -95,8 +98,8 @@ namespace Engine.Game
 
             mainShader.SetMatrix3("u_rot", camera.Rotation);
 
-            mainShader.SetInt("u_maxref", 8);
-            mainShader.SetInt("u_maxSamples", 128);
+            mainShader.SetInt("u_maxref", 16);
+            mainShader.SetInt("u_maxSamples", 4);
 
             GL.BindVertexArray(vao);
             // GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 6); // Six vertices for two triangles
