@@ -112,7 +112,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
     // Sphere Intersection
     vec4 sphereGlass = vec4(1.0, -2.0, 1.0, 1.0);
 	vec4 sphereMirror = vec4(-2.0, 1.0, 1.0, 1.0);
-	vec4 sphereLight = vec4(3.0, -4.0, 1.0, 0.5);
+	vec4 sphereLight = vec4(3.0, -4.0, 1.0, 1.0);
 
     it = sphIntersect(ro - sphereGlass.xyz, rd, sphereGlass.w);
 
@@ -141,7 +141,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		minIt = it;
 		vec3 itPos = ro + rd * it.x;
 		n = normalize(itPos - sphereLight.xyz);
-		col = vec4(10.0, 10.0, 10.0, -2.0);
+		col = vec4(100.0, 100.0, 100.0, -2.0);
 	}
 
     // Box Intersection
@@ -154,6 +154,17 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		minIt = it;
 		n = boxN;
 		col = vec4(0.9, 0.9, 0.9, 0.1);
+	}
+
+	vec3 extraBoxN;
+	vec3 extraBoxPos = vec3(12.0, 1.0, 5.0);
+	it = boxIntersection(ro - extraBoxPos, rd, vec3(5.0), extraBoxN);
+
+	if(it.x > 0.0 && it.x < minIt.x) 
+    {
+		minIt = it;
+		n = extraBoxN;
+		col = vec4(1.0, 1.0, 1.0, 0.79);
 	}
 
     // Plane Intersection
