@@ -30,7 +30,6 @@ namespace Engine.Game
         private bool firstMove = true;
 
         private Vector2 lastPos;
-        private Vector2 mouse;
 
         public override void OnLoad()
         {
@@ -64,7 +63,6 @@ namespace Engine.Game
             GL.BindVertexArray(0);
 
             camera = new Camera(Vector3.UnitZ * 3, window.Size.X / (float)window.Size.Y);
-            window.CursorState = CursorState.Grabbed;
         }
 
         float t = 0.0f;
@@ -81,7 +79,7 @@ namespace Engine.Game
             t += window.Time;
 
             int u_time = GL.GetUniformLocation(mainShader.Handle, "u_time");
-            GL.Uniform1(u_time, t);
+            GL.Uniform1(u_time, 30.0f);
 
             Random r = new Random();
             int seed = r.Next();
@@ -95,9 +93,10 @@ namespace Engine.Game
             int u_pos = GL.GetUniformLocation(mainShader.Handle, "u_pos");
             GL.Uniform3(u_pos, camera.Position);
 
-            Matrix3 rot = Matrix3.CreateRotationY(camera.Pitch) * Matrix3.CreateRotationZ(camera.Yaw);
+            mainShader.SetMatrix3("u_rot", camera.Rotation);
 
-            mainShader.SetMatrix3("u_rot", rot);
+            mainShader.SetInt("u_maxref", 8);
+            mainShader.SetInt("u_maxSamples", 128);
 
             GL.BindVertexArray(vao);
             // GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 6); // Six vertices for two triangles
@@ -105,63 +104,53 @@ namespace Engine.Game
             GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public override void OnUpdate() 
+        public override void OnUpdate(float dt) 
         { 
-            if (!window.IsFocused) // Check to see if the window is focused
-            {
-                return;
-            }
-
             var input = window.KeyboardState;
+            var mouse = window.MouseState;
 
-            const float cameraSpeed = 0.005f;
-            const float sensitivity = 0.002f;
+            const float cameraSpeed = 5.0f;
+            const float sensitivity = 0.01f;
 
+            camera.UpdateVectors();
             if (input.IsKeyDown(Keys.W))
             {
-                camera.Position += camera.Front * cameraSpeed * (float)t; // Forward
+                camera.Position += camera.Front * cameraSpeed * dt; // Forward
             }
-
             if (input.IsKeyDown(Keys.S))
             {
-                camera.Position -= camera.Front * cameraSpeed * (float)t; // Backwards
+                camera.Position -= camera.Front * cameraSpeed * dt; // Backwards
             }
             if (input.IsKeyDown(Keys.A))
             {
-                camera.Position -= camera.Right * cameraSpeed * (float)t; // Left
+                camera.Position -= camera.Right * cameraSpeed * dt; // Left
             }
             if (input.IsKeyDown(Keys.D))
             {
-                camera.Position += camera.Right * cameraSpeed * (float)t; // Right
+                camera.Position += camera.Right * cameraSpeed * dt; // Right
             }
             if (input.IsKeyDown(Keys.Space))
             {
-                camera.Position += Vector3.UnitZ * cameraSpeed * (float)t; // Up
+                camera.Position += Vector3.UnitZ * cameraSpeed * dt; // Up
             }
             if (input.IsKeyDown(Keys.LeftShift))
             {
-                camera.Position -= Vector3.UnitZ * cameraSpeed * (float)t; // Down
+                camera.Position -= Vector3.UnitZ * cameraSpeed * dt; // Down
             }
 
-            // Get the mouse state
-            var m = window.MouseState;
-
-            if (firstMove) // This bool variable is initially set to true.
+            if (firstMove)
             {
-                lastPos = new Vector2(m.X, m.Y);
+                lastPos = new Vector2(mouse.X, mouse.Y);
                 firstMove = false;
             }
             else
             {
-                // Calculate the offset of the mouse position
-                var deltaX = m.X - lastPos.X;
-                var deltaY = m.Y - lastPos.Y;
-                lastPos = new Vector2(m.X, m.Y);
-                mouse = new Vector2(deltaX, deltaY); 
+                var deltaX = mouse.X - lastPos.X;
+                var deltaY = mouse.Y - lastPos.Y;
+                lastPos = new Vector2(mouse.X, mouse.Y);
 
-                // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
                 camera.Yaw += deltaX * sensitivity;
-                camera.Pitch += deltaY * sensitivity; // Reversed since y-coordinates range from bottom to top
+                camera.Pitch += deltaY * sensitivity;
             }
         }
     }

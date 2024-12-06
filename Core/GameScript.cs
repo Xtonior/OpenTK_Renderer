@@ -24,7 +24,7 @@ namespace Engine.Game
         }
 
         public abstract void OnLoad();
-        public abstract void OnUpdate();
+        public abstract void OnUpdate(float dt);
         public abstract void OnRender();
     }
 }

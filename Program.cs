@@ -12,7 +12,7 @@ namespace Engine
             var nativeWindowSettings = new NativeWindowSettings()
             {
                 ClientSize = new Vector2i(800, 600),
-                Title = "LearnOpenTK - Creating a Window",
+                Title = "RT",
                 // This is needed to run on macos
                 Flags = ContextFlags.ForwardCompatible,
             };
@@ -22,7 +22,7 @@ namespace Engine
             {
                 GameScript game = new Game.Game();
                 game.Init(window);
-                
+
                 window.Run();
             }
 

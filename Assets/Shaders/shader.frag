@@ -6,13 +6,14 @@ uniform vec2 u_seed1;
 uniform vec2 u_seed2;
 uniform vec3 u_pos;
 uniform mat3 u_rot;
+uniform int u_maxref = 8;
+uniform int u_maxSamples = 4;
 
 out vec4 outputColor;
 
 in vec2 texCoord;
 
 const float MAX_DIST = 99999.0;
-const int MAX_REF = 8;
 
 vec3 sun = vec3(0.8, 0.8, 0.96);
 vec3 sky = vec3(0.2, 0.3, 0.9);
@@ -97,7 +98,8 @@ float plaIntersect( in vec3 ro, in vec3 rd, in vec4 p )
 
 vec3 getSky(vec3 rd, vec3 lightDir)
 {
-    return vec3(sky + (pow(max(0.0, dot(rd, lightDir)), 64.0) * vec3(1.0)));
+	vec3 sky = vec3(sky + (pow(max(0.0, dot(rd, lightDir)), 64.0) * vec3(5.0)));
+    return mix(sky, sun, 0.8); 
 }
 
 vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir) 
@@ -117,7 +119,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		minIt = it;
 		vec3 itPos = ro + rd * it.x;
 		n = normalize(itPos - sphere.xyz);
-		col = sphere;
+		col = vec4(0.7, 0.6, 0.9, -1.5);
 	}
 
     // Box Intersection
@@ -129,20 +131,19 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
     {
 		minIt = it;
 		n = boxN;
-		col = vec4(0.9, 0.2, 0.2, -0.5);
+		col = vec4(0.9, 0.9, 0.9, 0.1);
 	}
 
     // Plane Intersection
 	vec3 planeNormal = vec3(0.0, 0.0, 1.0);
-	it = vec2(plaIntersect(ro, rd, vec4(planeNormal, 1.0)));
+	it = vec2(plaIntersect(ro, rd, vec4(planeNormal, 0.0)));
 
 	if(it.x > 0.0 && it.x < minIt.x) 
     {
 		minIt = it;
 		n = planeNormal;
-		col = vec4(0.5, 0.25, 0.1, 0.01);
+		col = vec4(0.8, 0.6, 0.7, 0.3);
 	}
-
 
     // RayTrace
 	if(minIt.x == MAX_DIST) return vec4(getSky(rd, lightDir), -2.0);
@@ -169,7 +170,8 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
     // Color
     vec3 itPos = ro + rd * it.x;
 	vec3 r = randomOnSphere();
-	vec3 diffuse = normalize(r * dot(r, n));
+	vec3 weightedDirection = normalize(mix(r, lightDir, max(0.0, dot(r, lightDir))));
+	vec3 diffuse = normalize(weightedDirection * dot(weightedDirection, n));
 	ro += rd * (minIt.x - 0.001);
 	rd = mix(diffuse, reflected, col.a);
 	return col;
@@ -178,7 +180,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 vec3 traceRay(vec3 ro, vec3 rd, vec3 lightDir)
 {
     vec3 col = vec3(1.0);
-	for(int i = 0; i < MAX_REF; i++)
+	for(int i = 0; i < u_maxref; i++)
 	{
 		vec4 refCol = castRay(ro, rd, lightDir);
 		col *= refCol.rgb;
@@ -204,14 +206,13 @@ void main()
     vec3 lightDir = normalize(vec3(cos(u_time), 0.75, sin(u_time)));
 
 	vec3 col = vec3(0.0);
-	int samples = 4;
 
-	for(int i = 0; i < samples; i++) 
+	for(int i = 0; i < u_maxSamples; i++) 
 	{
 		col += traceRay(rayOrigin, rayDirection, lightDir);
 	}
 
-	col /= samples;
+	col /= u_maxSamples;
 
     outputColor = vec4(col, 1.0);
 }
