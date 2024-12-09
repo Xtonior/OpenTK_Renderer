@@ -85,21 +85,22 @@ namespace Engine.Game
             GL.Uniform1(u_time, 120.0f);
 
             Random r = new Random();
-            int seed = r.Next();
+            int seed1 = r.Next();
+            int seed2 = r.Next();
 
             int u_seed1 = GL.GetUniformLocation(mainShader.Handle, "u_seed1");
-            GL.Uniform1(u_seed1, seed);
+            GL.Uniform1(u_seed1, seed1);
 
             int u_seed2 = GL.GetUniformLocation(mainShader.Handle, "u_seed2");
-            GL.Uniform1(u_seed2, seed);
+            GL.Uniform1(u_seed2, seed2);
 
             int u_pos = GL.GetUniformLocation(mainShader.Handle, "u_pos");
             GL.Uniform3(u_pos, camera.Position);
 
             mainShader.SetMatrix3("u_rot", camera.Rotation);
 
-            mainShader.SetInt("u_maxref", 16);
-            mainShader.SetInt("u_maxSamples", 4);
+            mainShader.SetInt("u_maxref", 32);
+            mainShader.SetInt("u_maxSamples", 10);
 
             GL.BindVertexArray(vao);
             // GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 6); // Six vertices for two triangles
@@ -109,6 +110,8 @@ namespace Engine.Game
 
         public override void OnUpdate(float dt) 
         { 
+            if (!window.IsActiveWindow) return;
+
             var input = window.KeyboardState;
             var mouse = window.MouseState;
 

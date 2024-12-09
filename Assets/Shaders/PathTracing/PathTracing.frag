@@ -16,7 +16,7 @@ in vec2 texCoord;
 const float MAX_DIST = 99999.0;
 
 vec3 sun = vec3(1.0, 1.0, 1.0);
-vec3 sky = vec3(0.2, 0.3, 0.9);
+vec3 sky = vec3(0.7, 0.8, 0.9);
 
 uvec4 R_STATE;
 
@@ -98,8 +98,8 @@ float plaIntersect( in vec3 ro, in vec3 rd, in vec4 p )
 
 vec3 getSky(vec3 rd, vec3 lightDir)
 {
-	vec3 sky = vec3(sky + (pow(max(0.0, dot(rd, lightDir)), 64.0) * vec3(5.0)));
-    return mix(sky, sun, 0.8); 
+	vec3 sky = vec3(sky + (pow(max(0.0, dot(rd, lightDir)), 16.0) * vec3(2.0)));
+    return mix(sky, sun, 0.5); 
 }
 
 vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir) 
@@ -111,8 +111,6 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 
     // Sphere Intersection
     vec4 sphereGlass = vec4(1.0, -2.0, 1.0, 1.0);
-	vec4 sphereMirror = vec4(-2.0, 1.0, 1.0, 1.0);
-	vec4 sphereLight = vec4(3.0, -4.0, 1.0, 1.0);
 
     it = sphIntersect(ro - sphereGlass.xyz, rd, sphereGlass.w);
 
@@ -124,6 +122,8 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		col = vec4(0.9, 0.9, 0.9, -1.5);
 	}
 
+	vec4 sphereMirror = vec4(-2.0, 1.0, 1.0, 1.0);
+
 	it = sphIntersect(ro - sphereMirror.xyz, rd, sphereMirror.w);
 
 	if(it.x > 0.0 && it.x < minIt.x) 
@@ -134,6 +134,8 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		col = vec4(1.0, 1.0, 1.0, 1.0);
 	}
 
+	vec4 sphereLight = vec4(3.0, -4.0, 1.0, 0.5);
+
 	it = sphIntersect(ro - sphereLight.xyz, rd, sphereLight.w);
 
 	if(it.x > 0.0 && it.x < minIt.x) 
@@ -141,7 +143,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
 		minIt = it;
 		vec3 itPos = ro + rd * it.x;
 		n = normalize(itPos - sphereLight.xyz);
-		col = vec4(100.0, 100.0, 100.0, -2.0);
+		col = vec4(10.0, 10.0, 0.0, -2.0);
 	}
 
     // Box Intersection
@@ -175,7 +177,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
     {
 		minIt = it;
 		n = planeNormal;
-		col = vec4(0.8, 0.6, 0.7, 0.3);
+		col = vec4(0.6, 0.4, 0.3, 0.0);
 	}
 
     // Ray trace
@@ -203,7 +205,7 @@ vec4 castRay(inout vec3 ro, inout vec3 rd, vec3 lightDir)
     // Color
     vec3 itPos = ro + rd * it.x;
 	vec3 r = randomOnSphere();
-	vec3 weightedDirection = normalize(mix(r, lightDir, max(0.0, dot(r, lightDir))));
+	vec3 weightedDirection = normalize(mix(r, lightDir * 10.0, max(0.0, dot(r, lightDir))));
 	vec3 diffuse = normalize(weightedDirection * dot(weightedDirection, n));
 	ro += rd * (minIt.x - 0.001);
 	rd = mix(diffuse, reflected, col.a);

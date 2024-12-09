@@ -24,14 +24,12 @@ namespace Engine.Core
         protected override void OnLoad()
         {
             base.OnLoad();
-
+            VSync = VSyncMode.Off;
             LoadAction?.Invoke();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (!IsActiveWindow && IsFocused) IsActiveWindow = true;
-
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
                 IsActiveWindow = false;
