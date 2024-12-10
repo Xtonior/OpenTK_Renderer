@@ -1,14 +1,14 @@
-#Path Tracing 3D Renderer
+# Path Tracing 3D Renderer
 
-##About
+## About
 Hello!, I'm Xtonior and the only developer of this renderer. I'm doing it for fun, but if you want to use my repo or mention it feel free
 
-##Ready
+## Ready
 - Basic path tracing (ray reflection, refraction)
 - Sphere, Cube and plane intersections
 - Light sources
 
-##Todo:
+## Todo:
 - Skybox
 - 3D polygonal mesh support
 - TAA
@@ -18,5 +18,5 @@ Hello!, I'm Xtonior and the only developer of this renderer. I'm doing it for fu
 - More complex materials
 - Textures (albedo, metallic, roughness and normal maps)
 
-##Contacts
+## Contacts
 Discord: .xtonior
