@@ -29,3 +29,4 @@
 /home/xtonior/Documents/Projects/C#/OpenTK_Renderer/obj/Debug/net6.0/OpenTK_Renderer.pdb
 /home/xtonior/Documents/Projects/C#/OpenTK_Renderer/obj/Debug/net6.0/OpenTK_Renderer.genruntimeconfig.cache
 /home/xtonior/Documents/Projects/C#/OpenTK_Renderer/obj/Debug/net6.0/ref/OpenTK_Renderer.dll
+/home/xtonior/Documents/Projects/C#/OpenTK_Renderer/bin/Debug/net6.0/StbImageSharp.dll

@@ -1,4 +1,22 @@
-Hello!
+#Path Tracing 3D Renderer
 
-I'm Xtonior, developer of this renderer.
-This renderer is ray-casting 3D engine I'm working on free time, feel free to use it for your needs. If you have any questions you can contact me in Discord: .xtonior
+##About
+Hello!, I'm Xtonior and the only developer of this renderer. I'm doing it for fun, but if you want to use my repo or mention it feel free
+
+##Ready
+- Basic path tracing (ray reflection, refraction)
+- Sphere, Cube and plane intersections
+- Light sources
+
+##Todo:
+- Skybox
+- 3D polygonal mesh support
+- TAA
+- Post-Processing
+- World Editor
+- Material Editor
+- More complex materials
+- Textures (albedo, metallic, roughness and normal maps)
+
+##Contacts
+Discord: .xtonior

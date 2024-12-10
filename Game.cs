@@ -1,5 +1,6 @@
 using System;
 using Engine.Core;
+using Engine.Core.Texturing;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -31,6 +32,18 @@ namespace Engine.Game
 
         private Vector2 lastPos;
 
+        string[] skybox =
+        {
+            "Assets/Skybox/right.jpg",
+            "Assets/Skybox/left.jpg",
+            "Assets/Skybox/top.jpg",
+            "Assets/Skybox/bottom.jpg",
+            "Assets/Skybox/front.jpg",
+            "Assets/Skybox/back.jpg"
+        };
+
+        uint skyboxID;
+
         public override void OnLoad()
         {
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -61,6 +74,8 @@ namespace Engine.Game
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
+
+            skyboxID = Cubemap.LoadCubeMap(skybox);
 
             camera = new Camera(Vector3.UnitZ * 3, window.Size.X / (float)window.Size.Y);
         }
@@ -97,10 +112,16 @@ namespace Engine.Game
             int u_pos = GL.GetUniformLocation(mainShader.Handle, "u_pos");
             GL.Uniform3(u_pos, camera.Position);
 
+            int u_cubemap = GL.GetUniformLocation(mainShader.Handle, "u_cubemap");
+            GL.Uniform1(u_cubemap, 0);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, skyboxID);
+
             mainShader.SetMatrix3("u_rot", camera.Rotation);
 
-            mainShader.SetInt("u_maxref", 32);
-            mainShader.SetInt("u_maxSamples", 10);
+            mainShader.SetInt("u_maxrefs", 4);
+            mainShader.SetInt("u_maxsamples", 8);
 
             GL.BindVertexArray(vao);
             // GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 6); // Six vertices for two triangles
@@ -108,9 +129,13 @@ namespace Engine.Game
             GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public override void OnUpdate(float dt) 
-        { 
-            if (!window.IsActiveWindow) return;
+        public override void OnUpdate(float dt)
+        {
+            if (!window.IsActiveWindow)
+            {
+                lastPos = window.MouseState.Position;
+                return;
+            }
 
             var input = window.KeyboardState;
             var mouse = window.MouseState;

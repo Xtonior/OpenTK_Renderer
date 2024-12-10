@@ -3,6 +3,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using System;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Engine.Core
 {
@@ -14,7 +15,9 @@ namespace Engine.Core
 
         public bool IsActiveWindow { get; set; } = true;
 
-        public float Time {get; private set;}
+        public float Time { get; private set; }
+
+        private Vector2 lastMousePos = Vector2.Zero;
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -30,20 +33,15 @@ namespace Engine.Core
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (KeyboardState.IsKeyDown(Keys.Escape))
+            if (KeyboardState.IsKeyPressed(Keys.Escape))
             {
-                IsActiveWindow = false;
+                ChangeActive(false);
             }
 
-            if (IsActiveWindow)
+            if(MouseState.IsButtonPressed(MouseButton.Left))
             {
-                CursorState = CursorState.Grabbed;
+                ChangeActive(true);
             }
-            else
-            {
-                CursorState = CursorState.Normal;
-                return;
-            }   
             
             base.OnUpdateFrame(e);
 
@@ -66,6 +64,23 @@ namespace Engine.Core
             base.OnResize(e);
 
             GL.Viewport(0, 0, Size.X, Size.Y);
+        }
+
+        private void ChangeActive(bool active)
+        {
+            switch (active)
+            {
+                case true:
+                    lastMousePos = MousePosition;
+                    IsActiveWindow = true;
+                    CursorState = CursorState.Grabbed;
+                    break;
+                case false:
+                    MousePosition = lastMousePos;
+                    IsActiveWindow = false;
+                    CursorState = CursorState.Normal;
+                    break;
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "NPIhtleUxh5bgH3i0hdHsSKtyio8GyZnJWBPeEoXkCEGjhjEqAmctdHlUWYBLIwZcFERrE7HmpdvIClCnmfkLA==",
+  "dgSpecHash": "NsbhU9AJaUZoiLsPC5cW2KoZOgAkOmCs+i8s0SUtTq9NFqhPR/KRojKSNB2zv9oV23y8hrMmxscAMR4xqsZjlQ==",
   "success": true,
   "projectFilePath": "/home/xtonior/Documents/Projects/C#/OpenTK_Renderer/OpenTK_Renderer.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "/home/xtonior/.nuget/packages/opentk.windowing.common/4.8.2/opentk.windowing.common.4.8.2.nupkg.sha512",
     "/home/xtonior/.nuget/packages/opentk.windowing.desktop/4.8.2/opentk.windowing.desktop.4.8.2.nupkg.sha512",
     "/home/xtonior/.nuget/packages/opentk.windowing.graphicslibraryframework/4.8.2/opentk.windowing.graphicslibraryframework.4.8.2.nupkg.sha512",
+    "/home/xtonior/.nuget/packages/stbimagesharp/2.30.15/stbimagesharp.2.30.15.nupkg.sha512",
     "/home/xtonior/.nuget/packages/system.runtime.compilerservices.unsafe/5.0.0/system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
     "/home/xtonior/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.8/microsoft.aspnetcore.app.ref.6.0.8.nupkg.sha512",
     "/home/xtonior/.nuget/packages/microsoft.netcore.app.host.linux-x64/6.0.8/microsoft.netcore.app.host.linux-x64.6.0.8.nupkg.sha512",
