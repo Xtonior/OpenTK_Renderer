@@ -1,4 +1,5 @@
-﻿﻿using Engine.Game;
+﻿﻿using Engine.Core.Rendering;
+using Engine.Game;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -17,20 +18,21 @@ namespace Engine
                 Flags = ContextFlags.ForwardCompatible,
             };
 
-            // Game
-            /*using (var window = new Engine.Core.Window(GameWindowSettings.Default, nativeWindowSettings))
-            {
-                GameScript game = new Game.Game();
-                game.Init(window);
+            WindowCycler windowCycler = new WindowCycler();
 
+            // Game
+            /*using (var window = new Core.EngineWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
+            {
+                GameScript game = new Game.Game(window.Renderer);
+                game.Init(windowCycler, window);
                 window.Run();
             }*/
 
             // Editor
-            using (var window = new Editor.EditorWindow(GameWindowSettings.Default, nativeWindowSettings))
+            using (var window = new Editor.EditorWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
             {
-                window.Init();
-                
+                GameScript game = new Game.Game(window.Renderer);
+                game.Init(windowCycler, window);
                 window.Run();
             }
         }

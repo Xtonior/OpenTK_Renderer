@@ -5,26 +5,25 @@ namespace Engine.Game
 {
     public abstract class GameScript
     {
+        internal protected WindowCycler? cycler;
         internal protected Window? window;
 
-        public void Init(Window window)
+        public void Init(WindowCycler cycler, Window? window)
         {
+            this.cycler = cycler;
             this.window = window;
 
-            window.LoadAction += OnLoad;
-            window.UpdateFrameAction += OnUpdate;
-            window.RenderFrameAction += OnRender;
+            cycler.LoadAction += OnLoad;
+            cycler.UpdateFrameAction += OnUpdate;
         }
 
         public void Destroy()
         {
-            window.LoadAction -= OnLoad;
-            window.UpdateFrameAction -= OnUpdate;
-            window.RenderFrameAction -= OnRender;
+            cycler.LoadAction -= OnLoad;
+            cycler.UpdateFrameAction -= OnUpdate;
         }
 
         public abstract void OnLoad();
         public abstract void OnUpdate(float dt);
-        public abstract void OnRender();
     }
 }
