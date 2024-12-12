@@ -14,6 +14,7 @@ namespace Engine.Core
         public Action RenderFrameAction;
 
         public bool IsActiveWindow { get; set; } = true;
+        public bool AutoHideMouse { get; set; } = true;
 
         public float Time { get; private set; }
 
@@ -33,16 +34,19 @@ namespace Engine.Core
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (KeyboardState.IsKeyPressed(Keys.Escape))
+            if (AutoHideMouse)
             {
-                ChangeActive(false);
+                if (KeyboardState.IsKeyPressed(Keys.Escape))
+                {
+                    ChangeActive(false);
+                }
+
+                if (MouseState.IsButtonPressed(MouseButton.Left))
+                {
+                    ChangeActive(true);
+                }
             }
 
-            if(MouseState.IsButtonPressed(MouseButton.Left))
-            {
-                ChangeActive(true);
-            }
-            
             base.OnUpdateFrame(e);
 
             UpdateFrameAction?.Invoke((float)e.Time);
