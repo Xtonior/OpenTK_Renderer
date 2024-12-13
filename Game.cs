@@ -38,34 +38,31 @@ namespace Engine.Game
             var input = window.KeyboardState;
             var mouse = window.MouseState;
 
-            const float cameraSpeed = 5.0f;
-            const float sensitivity = 0.01f;
-
             renderer.RenderCamera.UpdateVectors();
 
             if (input.IsKeyDown(Keys.W))
             {
-                renderer.RenderCamera.Position += renderer.RenderCamera.Front * cameraSpeed * dt; // Forward
+                renderer.RenderCamera.Position += renderer.RenderCamera.Front * renderer.CurrentCameraSettings.CameraSpeed * dt; // Forward
             }
             if (input.IsKeyDown(Keys.S))
             {
-                renderer.RenderCamera.Position -= renderer.RenderCamera.Front * cameraSpeed * dt; // Backwards
+                renderer.RenderCamera.Position -= renderer.RenderCamera.Front * renderer.CurrentCameraSettings.CameraSpeed * dt; // Backwards
             }
             if (input.IsKeyDown(Keys.A))
             {
-                renderer.RenderCamera.Position -= renderer.RenderCamera.Right * cameraSpeed * dt; // Left
+                renderer.RenderCamera.Position -= renderer.RenderCamera.Right * renderer.CurrentCameraSettings.CameraSpeed * dt; // Left
             }
             if (input.IsKeyDown(Keys.D))
             {
-                renderer.RenderCamera.Position += renderer.RenderCamera.Right * cameraSpeed * dt; // Right
+                renderer.RenderCamera.Position += renderer.RenderCamera.Right * renderer.CurrentCameraSettings.CameraSpeed * dt; // Right
             }
             if (input.IsKeyDown(Keys.Space))
             {
-                renderer.RenderCamera.Position += Vector3.UnitZ * cameraSpeed * dt; // Up
+                renderer.RenderCamera.Position += Vector3.UnitZ * renderer.CurrentCameraSettings.CameraSpeed * dt; // Up
             }
             if (input.IsKeyDown(Keys.LeftShift))
             {
-                renderer.RenderCamera.Position -= Vector3.UnitZ * cameraSpeed * dt; // Down
+                renderer.RenderCamera.Position -= Vector3.UnitZ * renderer.CurrentCameraSettings.CameraSpeed * dt; // Down
             }
 
             if (input.IsKeyPressed(Keys.R))
@@ -84,8 +81,8 @@ namespace Engine.Game
                 var deltaY = mouse.Y - lastPos.Y;
                 lastPos = new Vector2(mouse.X, mouse.Y);
 
-                renderer.RenderCamera.Yaw += deltaX * sensitivity;
-                renderer.RenderCamera.Pitch += deltaY * sensitivity;
+                renderer.RenderCamera.Yaw += deltaX * renderer.CurrentCameraSettings.Sensitivity;
+                renderer.RenderCamera.Pitch += deltaY * renderer.CurrentCameraSettings.Sensitivity;
             }
         }
     }

@@ -51,6 +51,7 @@ namespace Engine.Core
 
             Renderer.Render();
             Cycler.Render();
+            Renderer.Clear();
 
             Time = (float)e.Time;
 

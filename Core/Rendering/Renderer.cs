@@ -23,6 +23,8 @@ namespace Engine.Core.Rendering
         public Framebuffer Framebuffer;
         private Window? renderWindow;
         private Shader? mainShader;
+        public RenderSettings CurrentRenderSettings = new RenderSettings();
+        public CameraSettings CurrentCameraSettings = new CameraSettings();
 
         private float[] quadVertices = {
     // Positions   // Texture Coords
@@ -38,12 +40,6 @@ namespace Engine.Core.Rendering
         };
 
         private int vbo, vao, ebo;
-
-        private int renderModeNumSamples = 1024;
-        private int viewModeNumSamples = 8;
-
-        private float time;
-
         string[] skybox =
         {
 
@@ -101,7 +97,7 @@ namespace Engine.Core.Rendering
             Framebuffer = new Framebuffer(renderWindow.ClientSize.X, renderWindow.ClientSize.Y);
             // Framebuffer.Bind(renderWindow.ClientSize.X, renderWindow.ClientSize.Y);
 
-            Framebuffer.Unbind();
+            Clear();
         }
 
         public void Render()
@@ -115,12 +111,10 @@ namespace Engine.Core.Rendering
             mainShader.Use();
 
             Vector2 aspect = Vector2.Normalize(renderWindow.Size);
-            float numRays = 1024.0f;
+            float numRays = CurrentRenderSettings.RaysPerPixel;
 
             int u_resolution = GL.GetUniformLocation(mainShader.Handle, "u_resolution");
             GL.Uniform2(u_resolution, numRays * aspect.X, numRays * aspect.Y);
-
-            time += (float)renderWindow.UpdateTime;
 
             int u_time = GL.GetUniformLocation(mainShader.Handle, "u_time");
             GL.Uniform1(u_time, -60.0f);
@@ -146,15 +140,11 @@ namespace Engine.Core.Rendering
 
             mainShader.SetMatrix3("u_rot", RenderCamera.Rotation);
 
-            int samples = IsRenderMode ? renderModeNumSamples : viewModeNumSamples;
-
-            mainShader.SetInt("u_maxrefs", 16);
-            mainShader.SetInt("u_maxsamples", samples);
+            mainShader.SetInt("u_maxrefs", CurrentRenderSettings.NumRefs);
+            mainShader.SetInt("u_maxsamples", CurrentRenderSettings.NumSamples);
 
             GL.BindVertexArray(vao);
             GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
-
-            Framebuffer.Bind(renderWindow.ClientSize.X, renderWindow.ClientSize.Y);
         }
         
         public void Clear()
@@ -166,6 +156,16 @@ namespace Engine.Core.Rendering
             // Unbind previous textures
             GL.BindTexture(TextureTarget.Texture2D, 0);
             Framebuffer.Unbind();
+        }
+
+        public void UpdateRenderSettings(RenderSettings renderSettings)
+        {
+            CurrentRenderSettings = renderSettings;
+        }
+
+        public void UpdateCameraSettings(CameraSettings cameraSettings)
+        {
+            CurrentCameraSettings = cameraSettings;
         }
     }
 }

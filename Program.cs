@@ -21,14 +21,24 @@ namespace Engine
             WindowCycler windowCycler = new WindowCycler();
 
             // Game
-            /*using (var window = new Core.EngineWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
+            // RunGame(windowCycler, nativeWindowSettings);
+
+            // Editor
+            RunEditor(windowCycler, nativeWindowSettings);
+        }
+
+        private static void RunGame(WindowCycler windowCycler, NativeWindowSettings nativeWindowSettings)
+        {
+            using (var window = new Core.EngineWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
             {
                 GameScript game = new Game.Game(window.Renderer);
                 game.Init(windowCycler, window);
                 window.Run();
-            }*/
+            }
+        }
 
-            // Editor
+        private static void RunEditor(WindowCycler windowCycler, NativeWindowSettings nativeWindowSettings)
+        {
             using (var window = new Editor.EditorWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
             {
                 GameScript game = new Game.Game(window.Renderer);

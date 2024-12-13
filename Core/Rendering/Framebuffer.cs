@@ -1,14 +1,19 @@
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Engine.Core.Rendering
 {
     public class Framebuffer
     {
+        public Vector2i Size { get; private set; }
+
         private uint fbo, rbo;
         private uint framebufferTexture;
 
         public Framebuffer(int h, int w)
         {
+            Size = new(w, h);
+
             // Generating Framebuffer
             GL.GenFramebuffers(1, out fbo);
             GL.GenTextures(1, out framebufferTexture);
@@ -19,6 +24,8 @@ namespace Engine.Core.Rendering
 
         public void Bind(int w, int h)
         {
+            Size = new(w, h);
+
             // Framebuffer texture
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
             GL.BindTexture(TextureTarget.Texture2D, framebufferTexture);
@@ -48,16 +55,18 @@ namespace Engine.Core.Rendering
             // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
         }
 
-        public void Resize(int x, int y)
+        public void Resize(int w, int h)
         {
+            Size = new(w, h);
+
             GL.BindTexture(TextureTarget.Texture2D, framebufferTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, x, y, 0, PixelFormat.Rgb, PixelType.UnsignedByte, System.IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, w, h, 0, PixelFormat.Rgb, PixelType.UnsignedByte, System.IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, framebufferTexture, 0);
 
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, x, y);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, w, h);
 
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, rbo);
         }
