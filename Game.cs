@@ -26,17 +26,25 @@ namespace Engine.Game
 
         }
 
+        public override void OnSleep()
+        {
+            if (!window.IsActiveWindow) return;
+
+            UnFocus();
+        }
+
         public override void OnUpdate(float dt)
         {
             if (!window.IsActiveWindow)
             {
-                lastPos = window.MouseState.Position;
-                renderer.IsRenderMode = false;
+                UnFocus();
                 return;
             }
 
             var input = window.KeyboardState;
             var mouse = window.MouseState;
+
+            window.ChangeGrabMouseState(true);
 
             renderer.RenderCamera.UpdateVectors();
 
@@ -84,6 +92,12 @@ namespace Engine.Game
                 renderer.RenderCamera.Yaw += deltaX * renderer.CurrentCameraSettings.Sensitivity;
                 renderer.RenderCamera.Pitch += deltaY * renderer.CurrentCameraSettings.Sensitivity;
             }
+        }
+
+        private void UnFocus()
+        {
+            lastPos = window.MouseState.Position;
+            window.ChangeGrabMouseState(false);
         }
     }
 }

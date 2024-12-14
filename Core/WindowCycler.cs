@@ -6,6 +6,7 @@ namespace Engine
     {
         public Action? LoadAction;
         public Action<float>? UpdateFrameAction;
+        public Action? SleepAction;
         public Action? RenderFrameAction;
 
         public void Load()
@@ -15,6 +16,17 @@ namespace Engine
 
         public void Update(float time)
         {
+            UpdateFrameAction?.Invoke(time);
+        }
+
+        public void Update(float time, bool isActive)
+        {
+            if (!isActive)
+            {
+                SleepAction?.Invoke();
+                return;
+            }
+            
             UpdateFrameAction?.Invoke(time);
         }
 

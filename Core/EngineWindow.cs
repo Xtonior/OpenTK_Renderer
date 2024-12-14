@@ -31,12 +31,12 @@ namespace Engine.Core
             {
                 if (KeyboardState.IsKeyPressed(Keys.Escape))
                 {
-                    ChangeActive(false);
+                    ChangeGrabMouseState(false);
                 }
 
                 if (MouseState.IsButtonPressed(MouseButton.Left))
                 {
-                    ChangeActive(true);
+                    ChangeGrabMouseState(true);
                 }
             }
 
