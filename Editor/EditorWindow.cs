@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Engine;
 using Engine.Core;
 using Engine.Core.GUI;
@@ -24,7 +25,9 @@ namespace Editor
         private RenderSettings highRenderSettings = new RenderSettings();
         private RenderSettings currentRenderSettings = new RenderSettings();
         private CameraSettings cameraSettings = new CameraSettings();
-
+        private string currentPath = Directory.GetCurrentDirectory();
+        private string selectedFile = null;
+        private bool updateGame = false;
         int currentRenderSettingsID = 0;
 
         public EditorWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, WindowCycler windowCycler)
@@ -65,7 +68,7 @@ namespace Editor
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Cycler.Update((float)e.Time);
+            Cycler.Update((float)e.Time, updateGame);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -86,6 +89,8 @@ namespace Editor
             Renderer.Clear();
 
             RenderPropertiesPanel();
+            RenderAssetsBrowser();
+            RenderFileInfo();
 
             controller.Render();
 
@@ -110,6 +115,7 @@ namespace Editor
         {
             ImGui.Begin("Scene");
             {
+                updateGame = ImGui.IsWindowFocused();
                 IntPtr framebufferTexture = (IntPtr)viewportFramebuffer.GetFramebufferTexture();
 
                 System.Numerics.Vector2 viewportSize = ImGui.GetContentRegionAvail();
@@ -134,17 +140,19 @@ namespace Editor
                 System.Numerics.Vector2 imagePos = (viewportSize - imageSize) / 2;
                 ImGui.SetCursorPos(imagePos);
                 ImGui.Image(framebufferTexture, imageSize, new System.Numerics.Vector2(0, 1), new System.Numerics.Vector2(1, 0));
+
+                ImGui.End();
             }
-            ImGui.End();
         }
 
         private void RenderRenderSettingsTab()
         {
             if (ImGui.BeginTabItem("Graphics Settings"))
             {
-                if(ImGui.Combo("##GraphicsPresets", ref currentRenderSettingsID, renderSettingNames.ToArray(), renderSettingNames.Count))
+                if (ImGui.Combo("##GraphicsPresets", ref currentRenderSettingsID, renderSettingNames.ToArray(), renderSettingNames.Count))
                 {
                     currentRenderSettings = renderSettings[currentRenderSettingsID];
+                    ImGui.EndCombo();
                 }
 
                 ImGui.InputInt("Rays per Pixel", ref currentRenderSettings.RaysPerPixel, 1, 16);
@@ -176,15 +184,77 @@ namespace Editor
             }
         }
 
+        private void RenderDirectory(string path)
+        {
+            foreach (var directory in Directory.GetDirectories(path))
+            {
+                if (ImGui.TreeNode(Path.GetFileName(directory)))
+                {
+                    RenderDirectory(directory);
+                    ImGui.TreePop();
+                }
+            }
+
+            foreach (var file in Directory.GetFiles(path))
+            {
+                if (ImGui.Selectable(Path.GetFileName(file), file == selectedFile))
+                {
+                    selectedFile = file;
+                }
+            }
+        }
+
+        private void RenderAssetsBrowser()
+        {
+            ImGui.Begin("Assets Browser");
+            {
+                ImGui.BeginChild("Assets Tree");
+                {
+                    RenderDirectory(currentPath);
+                }
+                ImGui.EndChild();
+                ImGui.SameLine();
+            }
+            ImGui.End();
+        }
+
+        private void RenderFileInfo()
+        {
+            ImGui.Begin("File Info");
+                {
+                    if (selectedFile != null)
+                    {
+                        ImGui.Text($"Selected File: {selectedFile}");
+                        ImGui.Separator();
+                        try
+                        {
+                            string content = File.ReadAllText(selectedFile);
+                            ImGui.TextWrapped(content);
+                        }
+                        catch (Exception e)
+                        {
+                            ImGui.Text($"Error reading file: {e.Message}");
+                        }
+                    }
+                    else
+                    {
+                        ImGui.Text("Select a file to view its content.");
+                    }
+                }
+                ImGui.End();
+        }
+
         private void RenderPropertiesPanel()
         {
             ImGui.Begin("Settings Panel");
-            if (ImGui.BeginTabBar("SettingsTabs"))
             {
-                RenderRenderSettingsTab();
-                RenderCameraSettingsTab();
+                if (ImGui.BeginTabBar("SettingsTabs"))
+                {
+                    RenderRenderSettingsTab();
+                    RenderCameraSettingsTab();
 
-                ImGui.EndTabBar();
+                    ImGui.EndTabBar();
+                }
             }
             ImGui.End();
         }

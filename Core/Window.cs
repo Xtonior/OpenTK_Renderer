@@ -23,9 +23,9 @@ namespace Engine.Core
             Renderer = new Renderer(this);
         }
 
-        internal void ChangeActive(bool active)
+        internal void ChangeGrabMouseState(bool state)
         {
-            switch (active)
+            switch (state)
             {
                 case true:
                     LastMousePos = MousePosition;

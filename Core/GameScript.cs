@@ -15,6 +15,7 @@ namespace Engine.Game
 
             cycler.LoadAction += OnLoad;
             cycler.UpdateFrameAction += OnUpdate;
+            cycler.SleepAction += OnSleep;
         }
 
         public void Destroy()
@@ -25,5 +26,6 @@ namespace Engine.Game
 
         public abstract void OnLoad();
         public abstract void OnUpdate(float dt);
+        public abstract void OnSleep();
     }
 }
