@@ -12,37 +12,33 @@ namespace Engine
         {
             var nativeWindowSettings = new NativeWindowSettings()
             {
-                ClientSize = new Vector2i(800, 600),
+                ClientSize = new Vector2i(1920, 1080),
                 Title = "RT",
                 // This is needed to run on macos
                 Flags = ContextFlags.ForwardCompatible,
             };
 
-            WindowCycler windowCycler = new WindowCycler();
-
             // Game
-            // RunGame(windowCycler, nativeWindowSettings);
+            // RunGame(engineCycler, nativeWindowSettings);
 
             // Editor
-            RunEditor(windowCycler, nativeWindowSettings);
+            RunEditor(nativeWindowSettings);
         }
 
-        private static void RunGame(WindowCycler windowCycler, NativeWindowSettings nativeWindowSettings)
+        private static void RunGame(NativeWindowSettings nativeWindowSettings)
         {
-            using (var window = new Core.EngineWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
+            using (var window = new Core.EngineWindow(GameWindowSettings.Default, nativeWindowSettings))
             {
-                GameScript game = new Game.Game(window.Renderer);
-                game.Init(windowCycler, window);
+                EngineCycler.Init(window);
                 window.Run();
             }
         }
 
-        private static void RunEditor(WindowCycler windowCycler, NativeWindowSettings nativeWindowSettings)
+        private static void RunEditor(NativeWindowSettings nativeWindowSettings)
         {
-            using (var window = new Editor.EditorWindow(GameWindowSettings.Default, nativeWindowSettings, windowCycler))
+            using (var window = new Editor.EditorWindow(GameWindowSettings.Default, nativeWindowSettings))
             {
-                GameScript game = new Game.Game(window.Renderer);
-                game.Init(windowCycler, window);
+                EngineCycler.Init(window);
                 window.Run();
             }
         }

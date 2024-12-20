@@ -11,8 +11,8 @@ namespace Engine.Core
     {
         public float Time { get; private set; }
 
-        public EngineWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, WindowCycler windowCycler) 
-        : base(gameWindowSettings, nativeWindowSettings, windowCycler)
+        public EngineWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) 
+        : base(gameWindowSettings, nativeWindowSettings)
         {
         }
 
@@ -20,7 +20,7 @@ namespace Engine.Core
         {
             base.OnLoad();
             VSync = VSyncMode.Off;
-            Cycler.Load();
+            EngineCycler.Load();
 
             AutoHideMouse = true;
         }
@@ -42,7 +42,7 @@ namespace Engine.Core
 
             base.OnUpdateFrame(e);
 
-            Cycler.Update((float)e.Time);
+            EngineCycler.Update((float)e.Time);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -50,7 +50,7 @@ namespace Engine.Core
             base.OnRenderFrame(e);
 
             Renderer.Render();
-            Cycler.Render();
+            EngineCycler.Render();
             Renderer.Clear();
 
             Time = (float)e.Time;

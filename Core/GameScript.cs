@@ -5,27 +5,52 @@ namespace Engine.Game
 {
     public abstract class GameScript
     {
-        internal protected WindowCycler? cycler;
         internal protected Window? window;
 
-        public void Init(WindowCycler cycler, Window? window)
+        public bool IsActive { get; private set; }
+
+        public GameScript(Window? window)
         {
-            this.cycler = cycler;
             this.window = window;
 
-            cycler.LoadAction += OnLoad;
-            cycler.UpdateFrameAction += OnUpdate;
-            cycler.SleepAction += OnSleep;
+            EngineCycler.LoadAction += OnLoad;
+            EngineCycler.UpdateFrameAction += OnUpdate;
         }
 
         public void Destroy()
         {
-            cycler.LoadAction -= OnLoad;
-            cycler.UpdateFrameAction -= OnUpdate;
+            EngineCycler.LoadAction -= OnLoad;
+            EngineCycler.UpdateFrameAction -= OnUpdate;
         }
 
         public abstract void OnLoad();
-        public abstract void OnUpdate(float dt);
-        public abstract void OnSleep();
+        public virtual void OnUpdate(float dt)
+        {
+            if (!IsActive) return;
+        }
+        public void SetActive(bool value)
+        {
+            if (IsActive == value) return;
+
+            IsActive = value;
+            if (IsActive)
+            {
+                OnEnable();
+            }
+            else
+            {
+                OnDisable();
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            
+        }
+
+        protected virtual void OnDisable()
+        {
+            
+        }
     }
 }

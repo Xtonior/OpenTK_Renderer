@@ -13,12 +13,13 @@ namespace Engine.Game
     {
         private Renderer renderer;
         private bool firstMove = true;
+        private bool isFocused = true;
 
         private Vector2 lastPos;
 
-        public Game(Renderer renderer)
+        public Game(Core.Window? window) : base(window)
         {
-            this.renderer = renderer;
+            this.renderer = window.Renderer;
         }
 
         public override void OnLoad()
@@ -26,23 +27,32 @@ namespace Engine.Game
 
         }
 
-        public override void OnSleep()
+        protected override void OnEnable()
         {
-            if (!window.IsActiveWindow) return;
+            base.OnEnable();
+            Focus();
+        }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();   
             UnFocus();
         }
 
         public override void OnUpdate(float dt)
         {
-            if (!window.IsActiveWindow)
+            base.OnUpdate(dt);
+
+            if (!isFocused)
             {
-                UnFocus();
                 return;
             }
 
             var input = window.KeyboardState;
             var mouse = window.MouseState;
+
+            if (input.IsKeyPressed(Keys.Escape)) UnFocus();
+            if (mouse.IsButtonPressed(MouseButton.Left)) Focus();
 
             window.ChangeGrabMouseState(true);
 
@@ -94,8 +104,16 @@ namespace Engine.Game
             }
         }
 
+        private void Focus()
+        {
+            isFocused = true;
+            lastPos = window.MouseState.Position;
+            window.ChangeGrabMouseState(true);
+        }
+
         private void UnFocus()
         {
+            isFocused = false;
             lastPos = window.MouseState.Position;
             window.ChangeGrabMouseState(false);
         }

@@ -5,6 +5,7 @@ using Engine;
 using Engine.Core;
 using Engine.Core.GUI;
 using Engine.Core.Rendering;
+using Engine.Game;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -27,13 +28,10 @@ namespace Editor
         private CameraSettings cameraSettings = new CameraSettings();
         private string currentPath = Directory.GetCurrentDirectory();
         private string selectedFile = null;
-        private bool updateGame = false;
         int currentRenderSettingsID = 0;
 
-        public EditorWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, WindowCycler windowCycler)
-        : base(gameWindowSettings, nativeWindowSettings, windowCycler)
-        {
-        }
+        public EditorWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
+        : base(gameWindowSettings, nativeWindowSettings) {}
 
         protected override void OnResize(ResizeEventArgs e)
         {
@@ -47,7 +45,7 @@ namespace Editor
             controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             viewportFramebuffer = Renderer.Framebuffer;
 
-            Cycler.Load();
+            EngineCycler.Load();
 
             fastRenderSettings.NumSamples = 6;
             // fastRenderSettings.RaysPerPixel = 1024;
@@ -68,7 +66,7 @@ namespace Editor
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Cycler.Update((float)e.Time, updateGame);
+            EngineCycler.Update((float)e.Time);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -115,7 +113,8 @@ namespace Editor
         {
             ImGui.Begin("Scene");
             {
-                updateGame = ImGui.IsWindowFocused();
+                EngineCycler.Game.SetActive(ImGui.IsWindowFocused());
+
                 IntPtr framebufferTexture = (IntPtr)viewportFramebuffer.GetFramebufferTexture();
 
                 System.Numerics.Vector2 viewportSize = ImGui.GetContentRegionAvail();
@@ -221,27 +220,27 @@ namespace Editor
         private void RenderFileInfo()
         {
             ImGui.Begin("File Info");
+            {
+                if (selectedFile != null)
                 {
-                    if (selectedFile != null)
+                    ImGui.Text($"Selected File: {selectedFile}");
+                    ImGui.Separator();
+                    try
                     {
-                        ImGui.Text($"Selected File: {selectedFile}");
-                        ImGui.Separator();
-                        try
-                        {
-                            string content = File.ReadAllText(selectedFile);
-                            ImGui.TextWrapped(content);
-                        }
-                        catch (Exception e)
-                        {
-                            ImGui.Text($"Error reading file: {e.Message}");
-                        }
+                        string content = File.ReadAllText(selectedFile);
+                        ImGui.TextWrapped(content);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        ImGui.Text("Select a file to view its content.");
+                        ImGui.Text($"Error reading file: {e.Message}");
                     }
                 }
-                ImGui.End();
+                else
+                {
+                    ImGui.Text("Select a file to view its content.");
+                }
+            }
+            ImGui.End();
         }
 
         private void RenderPropertiesPanel()

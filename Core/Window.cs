@@ -11,15 +11,13 @@ namespace Engine.Core
     public class Window : GameWindow
     {
         public Renderer Renderer {get; private set;}
-        public WindowCycler Cycler {get; private set;}
-        public bool IsActiveWindow { get; set; } = true;
+        public bool IsFocusedWindow { get; set; } = true;
         public bool AutoHideMouse { get; set; } = false;
         public Vector2 LastMousePos { get; internal set; } = Vector2.Zero;
 
-        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, WindowCycler windowCycler)
+        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
-            Cycler = windowCycler;
             Renderer = new Renderer(this);
         }
 
@@ -29,12 +27,10 @@ namespace Engine.Core
             {
                 case true:
                     LastMousePos = MousePosition;
-                    IsActiveWindow = true;
                     CursorState = CursorState.Grabbed;
                     break;
                 case false:
                     MousePosition = LastMousePos;
-                    IsActiveWindow = false;
                     CursorState = CursorState.Normal;
                     break;
             }
